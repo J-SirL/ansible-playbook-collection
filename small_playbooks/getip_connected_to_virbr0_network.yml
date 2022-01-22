@@ -1,0 +1,29 @@
+# Playbook to check ip's on vibr0 network
+# file: getip_connected_to_virbr0_network.yml
+# part of a collection on playbooks created by Johan Sörell
+# https://github.com/J-SirL/ansible-playbook-collection
+# Blog: https://blog.sitedevelopments.net/
+
+---
+- name: Debug playbook checking node ip's
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks: 
+    # Simple check for ip's connected to the virbr0 network
+    - name: check ip's connected to the virbr0 network
+      shell: set -o pipefail &&  arp -n -i virbr0 |tail -n +2 |  awk '{print $1}'
+    #      shell: nmap -n -sn 192.168.122.* -oG - | awk '/Up$/{print $2}'
+      register: active_nodes
+      changed_when: no
+
+    - name: step nodes
+      debug:
+        msg: "{{ item }}"
+        #verbosity: 3
+      loop: "{{ active_nodes.stdout_lines }}"
+      changed_when: no
+    
+    - name: It's currently {{ active_nodes.stdout_lines | count}} ip's on virbr0
+      debug:
+        msg: "Active nodes on vibr0 netvork: {{ active_nodes.stdout_lines | count}}"
