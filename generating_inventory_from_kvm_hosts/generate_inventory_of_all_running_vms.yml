@@ -1,0 +1,75 @@
+## Created 22 Jan 2022
+# File: generate_inventory_of_all_running_vms.yml
+# usage: example of how to create an inventory file from all vm's residing in a libvirt cluster
+---
+- name: generating_inventory_from_kvm_hosts
+  hosts: localhost
+  gather_facts: no
+  connection: local 
+  tasks:
+   - name: list only running VMs
+     community.libvirt.virt:
+       command: list_vms
+       state: running
+     register: running_vms
+
+  # - name: Write the running_vms instance host key to known hosts
+  #   connection: local
+  #   shell: "ssh-keyscan -H {{ running_vms.list_vms }} >> ~/.ssh/known_hosts"
+
+   - name: Add hosts to the group DynamicHosts
+     add_host:
+       hostname: "{{ item }}"
+       groups:
+         DynamicHosts
+     loop:  "{{ running_vms.list_vms }}" 
+
+- hosts: DynamicHosts
+  become: yes
+  gather_facts: yes
+#  vars:
+#    user: jsorell
+  tasks:
+
+    - name: setup inventory
+      setup: ~
+
+
+    - name: get hostname
+      command: hostname -f
+      register: thenode_name
+      
+    - name: hostnames
+      debug:
+         msg: "{{ thenode_name }}"
+         verbosity: 3  
+#    - debug:
+#        var: hostvars
+
+
+    - name: Checking name
+      debug:
+        msg: "{{ ansible_fqdn }}"
+        verbosity: 3
+
+# I don't create hosts file at the moment
+#    - name: create hosts_file
+#      template:
+#        src: templates/hosts.j2 
+#        dest: /etc/hosts
+#        owner: root
+#        group: root
+#        mode: '0644'
+#        force: yes
+#      delegate_to: "{{ delegate_host | default('localhost') }}"  # use the default value to specify your controller if no value is set default('your ansible node') 
+#      #become: no
+
+
+
+    - name: Create ansible inventory files
+      template:
+        src: templates/inventory.j2 
+        dest: "{{ playbook_dir }}/inventory"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+      delegate_to: "{{ delegate_host | default('localhost') }}"
