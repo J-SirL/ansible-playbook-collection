@@ -1,0 +1,15 @@
+#check_users_on_system_an_split_example.yml
+---
+- name: List local accounts on server an Ansible Split Example
+  hosts: localhost
+  vars: 
+    - usernames : []
+  tasks:
+    - name: setfacts for accounts on server
+      set_fact:        
+        usernames: '{{ usernames + [ item | split(":") | first ] }}'
+      loop: "{{ lookup('file', '/etc/passwd').splitlines() | select('match','^(?!#)')}}"
+      
+    - name: List local accounts on server
+      debug:
+        var: usernames
