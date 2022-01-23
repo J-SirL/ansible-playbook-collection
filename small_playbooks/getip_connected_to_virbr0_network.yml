@@ -1,6 +1,6 @@
 # Playbook to check ip's on vibr0 network
 # file: getip_connected_to_virbr0_network.yml
-# part of a collection on playbooks created by Johan Sörell
+# part of a collection of playbooks created by Johan Sörell
 # https://github.com/J-SirL/ansible-playbook-collection
 # Blog: https://blog.sitedevelopments.net/
 
