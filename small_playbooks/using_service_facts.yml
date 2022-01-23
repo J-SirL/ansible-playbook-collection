@@ -1,0 +1,16 @@
+# Playbook to show how to use service_facts in an playbook
+# file: using_service_facts.yml
+# part of a collection of playbooks created by Johan Sörell
+# https://github.com/J-SirL/ansible-playbook-collection
+# Blog: https://blog.sitedevelopments.net/
+---
+- name: using service_facts in playbook
+  gather_facts: false
+  hosts: localhost
+
+  tasks:
+    - service_facts:
+
+    - name: checking facts for firewalld
+      debug:
+        msg: "{{ services['firewalld.service'] }}"
