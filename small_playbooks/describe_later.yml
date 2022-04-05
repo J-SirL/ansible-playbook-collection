@@ -1,0 +1,42 @@
+---
+- name: Example on how to parse stdout_lines to verify values of a particular item
+  hosts: localhost
+  gather_facts: false
+  vars:
+    search_name: Jake
+    test_var: 
+        - "----------------------------------------------------------------------------------------"
+        - "|       Name               |      Count   |  Score | State|"
+        - "----------------------------------------------------------------------------------------"
+        - "| Jake                     |             5| 10     |   CA |"
+        - "| Mike                     |             3| 15     |   AR |"
+        - "| Jane                     |             3| 15     |   AR |"
+        - "----------------------------------------------------------------------------------------"
+        - "|Total Scores: 2                                          |"
+        - "----------------------------------------------------------------------------------------"
+
+  tasks:
+  - name: pick up the lines we are interested in.
+    set_fact:
+      important_lines: "{{ important_lines|default([]) +  [item] }}"
+    when: item.split('|') | length == 6
+    with_items:
+    - "{{ test_var }}"
+
+  - name: find the line with the name we are looking for in 2nd column
+    set_fact:
+      target_line: "{{ item }}"
+    when: item|trim is search(search_name)
+    with_items:
+    - "{{ important_lines }}"
+
+  - name: get the 3 attributes from the target line
+    set_fact:
+      attribute_count: "{{ target_line.split('|')[2]|trim }}"
+      attribute_score: "{{ target_line.split('|')[3]|trim }}"
+      attribute_state: "{{ target_line.split('|')[4]|trim }}"
+
+  - name: print results
+    debug:
+      msg: "name: {{ search_name }}, count: {{ attribute_count }}, score: {{ attribute_score }}, state: {{ attribute_state }}"
+

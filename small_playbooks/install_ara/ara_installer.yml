@@ -1,0 +1,52 @@
+---
+# needs this ansible-galaxy collection install recordsansible.ara
+#https://galaxy.ansible.com/recordsansible/ara
+- name: Installation of ARA
+  hosts: ara_server
+  gather_facts: False
+  become: True
+  tasks:
+
+   - name: update server
+     yum:
+       name: '*'
+       state: latest
+
+- name: Deploy ARA API and web client
+  hosts: ara_server
+  become: True
+  collections:
+     - recordsansible.ara
+  gather_facts: yes
+  vars:
+    # ara_api
+    ara_api_fqdn: lab-ara-server.sitedevelopments.lan 
+    ara_api_wsgi_server: gunicorn
+    ara_api_allowed_hosts:
+    - lab-ara-server.sitedevelopments.lan
+    ara_api_cors_origin_whitelist:
+    - web.lab-ara-server.sitedevelopments.lan
+    # ara_web
+    ara_web_fqdn: web.lab-ara-server.sitedevelopments.lan 
+    ara_web_api_endpoint: "http://lab-ara-server.sitedevelopments.lan"
+  roles:
+    - ara_api
+    - ara_web
+
+#- name: Deploy ARA API and web client
+#  hosts: all
+#  gather_facts: yes
+#  vars:
+#    # ara_api
+#    ara_api_fqdn: api.ara.example.org
+#    ara_api_wsgi_server: gunicorn
+#    ara_api_allowed_hosts:
+#    - api.ara.example.org
+#    ara_api_cors_origin_whitelist:
+#    - web.ara.example.org
+#    # ara_web
+#    ara_web_fqdn: web.ara.example.org
+#    ara_web_api_endpoint: "http://api.ara.example.org"
+#   roles:
+ #   - ara_api
+ #   - ara_web

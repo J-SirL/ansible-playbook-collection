@@ -1,0 +1,30 @@
+---
+users:
+  alice:
+    name: Alice Appleworth
+    telephone: 123-456-7890
+  bob:
+    name: Bob Bananarama
+    telephone: 987-654-3210
+
+puppet_class:
+  - name: 
+    - motd:
+       ansible_var_name:
+        motd_message_exception
+  - name:
+    - ssh:
+       ansible_var_name:
+        motd_message_exception
+  - name:
+    - ssh:
+       ansible_var_name:
+        motd_nästa
+
+#  ssh:
+#    ansible_var_name: 
+#      - permit_root_login
+#      - sshd_allow_tcp_forwarding
+#      - sshd_banner_content 
+#      - sshd_client_alive_count_max      
+#

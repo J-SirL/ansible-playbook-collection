@@ -1,0 +1,5 @@
+collections:
+  # Install a collection from Ansible Galaxy.
+  - name: recordsansible.ara
+    version: 0.1.0
+    source: https://galaxy.ansible.com

@@ -1,0 +1,10 @@
+---
+- name: Example of ansible.posix.synchronization using pull
+  hosts: all
+  tasks:
+
+    - name: testing synchronization using rsync protocoll (pull)
+      ansible.posix.synchronize:
+        mode: pull
+        src: rsync://lab-target.sitedevelopments.lan/etc/os-release
+        dest: /tmp/test_{{ inventory_hostname }}

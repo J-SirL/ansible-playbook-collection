@@ -1,0 +1,73 @@
+---
+- name: test dictionarys
+  hosts: localhost
+  vars: 
+    vrfs:
+     - name: vrf1
+       id: 11
+     - name: vrf2
+       id: 12
+     - name: vrf3
+       id: 13
+    
+    interfaces:
+     - vlan
+     - gigabit1.
+
+  tasks:
+
+    - name: include the vars
+      include_vars: 
+        dictonary_test.yaml
+
+    - name: debug te dictionary
+      debug:
+        msg: "{{ item.key }}"
+      with_dict: "{{ puppet_class }}"
+
+    - name: Print phone records
+      debug:
+        msg: "User {{ item.key }} is {{ item.value.name }} ({{ item.value.telephone }})"
+      with_dict: "{{ users }}"
+
+    - debug:
+        msg: |
+          cycle No{{ansible_loop.index}}
+          {{ item.id }}
+          {{ item.name }}
+          {% for i in interfaces %}
+          {{ i }}{{ item.id }}
+          {% endfor %}
+      loop: "{{ vrfs }}"
+      loop_control:
+        extended: true
+    
+    - name: Print phone records
+      debug:
+        msg: "User {{ item.key }} is {{ item.value.name }} ({{ item.value.telephone }})"
+      loop: "{{ lookup('dict', users) }}"
+
+
+    - name: check type
+      debug:
+        msg: "x: {{puppet_class | type_debug}}"
+
+ #   - name: Print puppet class
+ #     debug:
+ #       msg: "puppet_class {{ item.key }} is {{ item.value.name }}"
+ #     loop: "{{ puppet_class }}"
+
+    - name: test my shell script
+      shell:
+        cmd: echo "{{ item.puppet_class }} {{ item.smart_class_parameter }} {{ item.ansible_rolename }} {{ item.ansible_role_var_name }}"
+      with_items:
+        - { puppet_class: 'motd', smart_class_parameter: 'inline_template' , ansible_rolename: 'motd' , ansible_role_var_name: 'motd_message_exception'  }
+      register: script_ran
+    - name: debug echoout
+      debug:
+         var: script_ran
+
+#puppet_class:
+#  motd:
+#    ansible_var_name:
+#      - motd_message_exception

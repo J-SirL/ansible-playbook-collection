@@ -1,0 +1,39 @@
+---
+# create .gitconfig in multiple home directories using template + loop
+
+- name: run tasks on all hosts
+  hosts: all
+  vars:
+    users:
+      - name: John Smith
+        username: jsmith
+      - name: Jane Doe
+        username: jdoe
+  tasks:
+   # ensure users exists
+   - name: ensure users exist
+     user:
+       name: "{{ user.username }}"
+       comment: "{{ user.name }}"
+       state: present
+     become: True
+     loop: "{{ users }}"
+     loop_control:
+        loop_var: user
+   
+   # create .gitconfig for each user
+   - name: create .gitconfig for each user
+     template:
+       src: .gitconfig.j2
+       dest: "/home/{{ user.username }}/.gitconfig"
+       owner: "{{ user.username }}"
+       group: "{{ user.username }}"
+       mode: 0644
+     become: True
+     loop: "{{ users }}"
+     loop_control:
+       loop_var: user
+     
+     
+        
+

@@ -1,0 +1,11 @@
+---
+- name: Testing
+  hosts: localhost
+  tasks:
+
+    - name: add several users
+      shell:
+        cmd: echo "{{ item.rolename }} {{ item.class_name  }}"
+      with_items:
+        - { rolename: 'testuser1', class_name: 'wheel' }
+        #- { name: 'testuser2', groups: 'root' }

@@ -1,0 +1,51 @@
+---
+- name: testing template stdout
+  hosts: localhost
+  vars:
+   template_vars:
+     - stdout_lines:
+        - "## motd"
+        - "A global_vars/.placeholder"
+        - "A host_vars/.placeholder"
+  tasks:
+
+    - name: debug var
+      debug:
+        var: template_vars 
+    
+    - name: test template_stout_lines.j2
+      set_fact:
+        version: "{{ lookup('template', 'template_stout_lines.j2') }}"
+
+    - name: log git change
+      ansible.builtin.shell:
+        cmd: git status -sb -uno | grep -v "^\sD\s"
+      args:
+        chdir: /home/jsorell/github_repos/ansible-playbook-collection/small_playbooks/
+      register: git_file_status
+
+    - name: debug template_stout_lines.j2
+      debug:
+        var: git_file_status
+
+    - name: test
+      debug:
+        msg: "{{ item }}"
+      with_items: "{{ git_file_status.stdout_lines }}"
+      when: git_file_status.stdout_lines
+
+    - name: a shell test
+      ansible.builtin.shell:
+        cmd: |
+         echo commit -m "Automated deploy of branch
+         
+         Puppet to ansible changes was:
+          {{ git_file_status.stdout_lines | first }}
+          {{ git_file_status.stdout_lines[0] }}
+          {{ git_file_status.stdout_lines[1] }}
+          {{ git_file_status.stdout_lines[2] }}"
+      register: shell_out
+
+    - name: test shell output
+      debug:
+        var: shell_out
