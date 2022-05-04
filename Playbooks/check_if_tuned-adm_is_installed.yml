@@ -1,0 +1,21 @@
+---
+- name: check if tuyned-adm is installed
+  hosts: all
+  become: True
+  tasks:
+
+  - name: check if tuned_adm is installed
+    package_facts:
+      manager: auto
+      strategy: all
+
+  - name: Check whether a package called foobar is installed
+    debug:
+      msg: "{{ ansible_facts.packages['tuned'] | length }} versions of tuned are installed!"
+    when: "'tuned' in ansible_facts.packages"
+
+  - name: Check whether a package called foobar is installed
+    yum:
+      name: tuned
+      state: present
+    when: "'tuned' not in ansible_facts.packages"

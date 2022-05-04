@@ -1,0 +1,23 @@
+---
+- name: Test ansible facts
+  hosts: localhost
+  tasks:
+
+   
+  - name: debug ansible facts
+    vars: 
+      test: "{{ item.variable_name }}"
+    debug:
+      var: test
+    with_items:
+       - { content: "{{ ansible_default_ipv4.address }} \n" , variable_name: "01_H1_header" }   
+       - { content: "{{ ansible_default_ipv4.alias }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.alias }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.broadcast }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.gateway }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.interface }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.macaddress }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.mtu }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.netmask }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.network }} \n" , variable_name: "01_H1_header" }  
+       - { content: "{{ ansible_default_ipv4.type }} \n" , variable_name: "01_H1_header" }  

@@ -1,0 +1,43 @@
+---
+
+- name: get the target hosts to target
+  hosts: fed33.stqconsulting.local
+  connection: local
+  gather_facts: False
+  tasks:
+
+  # Simple check for ip's connected to the virbr0 network
+  - name: check ip's
+    shell: arp -n -i virbr0 |tail -n +2 |  awk '{print $1}'
+    register: active_nodes
+
+  - name: Add hosts to the group AddDevusers
+    add_host:
+      hostname: "{{ item }}"
+      groups:
+        AddDevusers
+    loop: "{{ active_nodes.stdout_lines }}"
+    when: active_nodes.changed is true
+
+
+- name: add users to my development machines
+  hosts: AddDevusers
+  #become_user: jsorell
+  become: True
+  vars:
+    users:
+     - name: devdevel
+       comment: "My devel-user"
+  tasks:
+
+  - name: print hostname
+    debug:
+      msg: "Welcome to host {{ansible_fqdn}}!"
+# add users for my_net_infra role
+  - name: makesure admin user exists
+    user:
+      name: "{{ item.name }}"
+      comment: "{{ item.comment }}"
+      state: present
+    loop: "{{ users }}"
+    register: user_added

@@ -1,0 +1,8 @@
+---
+- hosts: testtarget
+  #remote_user: admin
+  become: yes
+  roles:
+    mydevops_machine
+
+  

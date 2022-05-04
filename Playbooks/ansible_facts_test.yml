@@ -1,0 +1,77 @@
+---
+- name: Test ansible facts
+  hosts: localhost
+  tasks:
+
+  - name: Define local host/path for ease of use.
+    set_fact:
+      base_path: "{{ playbook_dir }}/ansible-playbooks.wiki/{{ ansible_fqdn }}" #"ansible-playbooks.wiki/{{ ansible_fqdn }}"
+
+  - name: Ensure necessary directory exists.
+    file:
+      name: "{{ base_path }}"
+      state: directory
+      mode: "0750"
+      force: true
+    delegate_to: localhost
+    connection: local
+    become: false
+
+  - name: debug ansible facts
+    vars: 
+      test: "{{ base_path }}/{{ item.variable_name }}.part"
+    debug:
+      var: test
+    with_items:
+       - { content: "| Default ipv4 settings | SETTINGS |" , variable_name: "01_Table_Header"}
+       - { content: "| ------ | ------ |" , variable_name: "02_Table_Header"}
+       - { content: "| address | {{ ansible_default_ipv4.address }} |" , variable_name: "03_Table_Header" }   
+       - { content: "| alias | {{ ansible_default_ipv4.alias }} |" , variable_name: "04_Table_Header" }  
+       - { content: "| broadcast | {{ ansible_default_ipv4.broadcast }} |" , variable_name: "05_Table_Header" }  
+       - { content: "| gateway | {{ ansible_default_ipv4.gateway }} |" , variable_name: "06__Table_Header" }  
+       - { content: "| interface | {{ ansible_default_ipv4.interface }} |" , variable_name: "07_Table_Header" }  
+       - { content: "| macaddress| {{ ansible_default_ipv4.macaddress }} |" , variable_name: "08_Table_Header" }  
+       - { content: "| mtu | {{ ansible_default_ipv4.mtu }} |" , variable_name: "09_Table_Header" }  
+       - { content: "| netmask |{{ ansible_default_ipv4.netmask }} |" , variable_name: "11_Table_Header" }  
+       - { content: "| network | {{ ansible_default_ipv4.network }} |" , variable_name: "12_Table_Header" }  
+       - { content: "| type |{{ ansible_default_ipv4.type }} |" , variable_name: "13_Table_Header" } 
+
+  - name: Write outputs to files
+    copy: 
+      content: "{{ item.content }}"
+      dest: "{{ base_path }}/{{ item.variable_name }}.part" #'{{ base_path }}"/"{{ item.variable_name }}".part'
+    delegate_to: localhost
+    connection: local
+    become: false
+    with_items:
+       - { content: "| Default ipv4 settings | SETTINGS |" , variable_name: "01_Table_Header"}
+       - { content: "| ------ | ------ |" , variable_name: "02_Table_Header"}
+       - { content: "| address | {{ ansible_default_ipv4.address }} |" , variable_name: "03_Table_Header" }   
+       - { content: "| alias | {{ ansible_default_ipv4.alias }} |" , variable_name: "04_Table_Header" }  
+       - { content: "| broadcast | {{ ansible_default_ipv4.broadcast }} |" , variable_name: "05_Table_Header" }  
+       - { content: "| gateway | {{ ansible_default_ipv4.gateway }} |" , variable_name: "06__Table_Header" }  
+       - { content: "| interface | {{ ansible_default_ipv4.interface }} |" , variable_name: "07_Table_Header" }  
+       - { content: "| macaddress| {{ ansible_default_ipv4.macaddress }} |" , variable_name: "08_Table_Header" }  
+       - { content: "| mtu | {{ ansible_default_ipv4.mtu }} |" , variable_name: "09_Table_Header" }  
+       - { content: "| netmask |{{ ansible_default_ipv4.netmask }} |" , variable_name: "11_Table_Header" }  
+       - { content: "| network | {{ ansible_default_ipv4.network }} |" , variable_name: "12_Table_Header" }  
+       - { content: "| type |{{ ansible_default_ipv4.type }} |" , variable_name: "13_Table_Header" } 
+  
+
+
+
+  - name: Concatenate created page files.
+    assemble:
+      src: "{{ base_path }}"
+      dest: "{{ base_path }}.md"
+    delegate_to: localhost
+    connection: local
+    become: false
+
+  - name: Purge .part files
+    file:
+      name: "{{ base_path }}"
+      state: absent
+    delegate_to: localhost
+    connection: local
+    become: false
