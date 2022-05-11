@@ -1,0 +1,12 @@
+---
+- name: Install multiple packages from flatpack
+  hosts: localhost
+  become: True
+  tasks:
+
+# Installing flatpacks [Extension Manager, kdenlive]
+  - name: Install [Extension Manager, kdenlive]
+    community.general.flatpak:
+      name:
+        - com.mattjakeman.ExtensionManager
+        - org.kde.kdenlive
